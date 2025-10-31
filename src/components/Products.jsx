@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
 
 const Products = () => {
+  const { addToCart } = useCart(); // Get addToCart function from context
   // Sample product data - replace with real data from API or state
   const allProducts = [
     {
@@ -299,7 +301,9 @@ const Products = () => {
                         <span className="text-2xl font-bold text-blue-600">{product.price}</span>
                         <span className="text-gray-400 line-through">{product.originalPrice}</span>
                       </div>
-                      <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200">
+                      <button 
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200">
                         Add to Cart
                       </button>
                     </div>

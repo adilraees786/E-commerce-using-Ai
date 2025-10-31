@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount] = useState(3); // Example cart count
+  const { cartCount } = useCart(); // Get cart count from context
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -106,8 +107,9 @@ const Navbar = () => {
               </svg>
             </button>
 
-            {/* Shopping Cart */}
-            <button
+                       {/* Shopping Cart */}
+                       <Link
+              to="/cart"
               className="p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-colors duration-200 relative"
               aria-label="Shopping Cart"
             >
@@ -127,7 +129,7 @@ const Navbar = () => {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
 
             {/* Mobile Menu Button */}
             <button
