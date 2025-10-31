@@ -6,7 +6,7 @@ import Products from './components/Products';
 import Categories from './components/Categories';
 import About from './components/About';
 import Contact from './components/Contact';
-
+import Footer from './components/Footer';
 
 // Component to handle page title updates
 const PageTitle = () => {
@@ -41,6 +41,7 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
+        <Footer />
       </div>
     </BrowserRouter>
   );
