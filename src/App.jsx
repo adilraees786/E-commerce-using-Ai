@@ -60,6 +60,7 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
+import Checkout from './components/Checkout';
 
 // Component to handle page title updates
 const PageTitle = () => {
@@ -72,6 +73,8 @@ const PageTitle = () => {
       '/categories': 'Categories - My Website',
       '/about': 'About Us - My Website',
       '/contact': 'Contact Us - My Website',
+      '/cart': 'Shopping Cart - My Website',
+      '/checkout': 'Checkout - My Website',
     };
 
     document.title = pageTitles[location.pathname] || 'My Website';
@@ -96,6 +99,7 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cart" element={<ShoppingCart />} />
+            <Route path="/checkout" element={<Checkout />} />
           </Routes>
           <Footer />
         </div>

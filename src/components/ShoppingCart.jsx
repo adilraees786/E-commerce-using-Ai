@@ -148,11 +148,9 @@ const ShoppingCart = () => {
                     <span className="text-blue-600">${cartTotal.toFixed(2)}</span>
                   </div>
                 </div>
-
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 mb-4">
+                <Link to="/checkout" className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 mb-4 block text-center">
                   Proceed to Checkout
-                </button>
-
+                </Link>
                 <button
                   onClick={clearCart}
                   className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-200"
