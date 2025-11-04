@@ -136,6 +136,226 @@ const Products = () => {
       category: 'Home & Garden',
       rating: 4.5,
       reviews: 91
+    },
+    {
+      id: 13,
+      name: 'Premium Camera Lens',
+      price: '$449.99',
+      originalPrice: '$599.99',
+      image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500',
+      discount: '25% OFF',
+      category: 'Electronics',
+      rating: 4.9,
+      reviews: 234
+    },
+    {
+      id: 14,
+      name: 'Designer Handbag',
+      price: '$299.99',
+      originalPrice: '$449.99',
+      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
+      discount: '33% OFF',
+      category: 'Fashion',
+      rating: 4.7,
+      reviews: 189
+    },
+    {
+      id: 15,
+      name: 'Gaming Keyboard RGB',
+      price: '$129.99',
+      originalPrice: '$179.99',
+      image: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=500',
+      discount: '28% OFF',
+      category: 'Electronics',
+      rating: 4.8,
+      reviews: 312
+    },
+    {
+      id: 16,
+      name: 'Yoga Leggings Set',
+      price: '$49.99',
+      originalPrice: '$79.99',
+      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=500',
+      discount: '38% OFF',
+      category: 'Sports',
+      rating: 4.6,
+      reviews: 145
+    },
+    {
+      id: 17,
+      name: 'Ceramic Dinner Set',
+      price: '$89.99',
+      originalPrice: '$129.99',
+      image: 'https://images.unsplash.com/photo-1571875257727-256c39da42af?w=500',
+      discount: '31% OFF',
+      category: 'Home & Garden',
+      rating: 4.5,
+      reviews: 167
+    },
+    {
+      id: 18,
+      name: 'Wireless Earbuds Pro',
+      price: '$149.99',
+      originalPrice: '$199.99',
+      image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500',
+      discount: '25% OFF',
+      category: 'Electronics',
+      rating: 4.8,
+      reviews: 278
+    },
+    {
+      id: 19,
+      name: 'Leather Jacket',
+      price: '$199.99',
+      originalPrice: '$299.99',
+      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500',
+      discount: '33% OFF',
+      category: 'Fashion',
+      rating: 4.7,
+      reviews: 156
+    },
+    {
+      id: 20,
+      name: 'Dumbbell Set 20kg',
+      price: '$159.99',
+      originalPrice: '$229.99',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500',
+      discount: '30% OFF',
+      category: 'Sports',
+      rating: 4.6,
+      reviews: 198
+    },
+    {
+      id: 21,
+      name: 'Smart LED TV 55"',
+      price: '$599.99',
+      originalPrice: '$899.99',
+      image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=500',
+      discount: '33% OFF',
+      category: 'Electronics',
+      rating: 4.9,
+      reviews: 423
+    },
+    {
+      id: 22,
+      name: 'Luxury Perfume Set',
+      price: '$119.99',
+      originalPrice: '$179.99',
+      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=500',
+      discount: '33% OFF',
+      category: 'Fashion',
+      rating: 4.8,
+      reviews: 267
+    },
+    {
+      id: 23,
+      name: 'Standing Desk',
+      price: '$299.99',
+      originalPrice: '$449.99',
+      image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500',
+      discount: '33% OFF',
+      category: 'Home & Garden',
+      rating: 4.7,
+      reviews: 234
+    },
+    {
+      id: 24,
+      name: 'Basketball Shoes',
+      price: '$129.99',
+      originalPrice: '$189.99',
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
+      discount: '32% OFF',
+      category: 'Sports',
+      rating: 4.6,
+      reviews: 289
+    },
+    {
+      id: 25,
+      name: 'Tablet Pro 12.9"',
+      price: '$799.99',
+      originalPrice: '$1099.99',
+      image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500',
+      discount: '27% OFF',
+      category: 'Electronics',
+      rating: 4.9,
+      reviews: 456
+    },
+    {
+      id: 26,
+      name: 'Silk Scarf Collection',
+      price: '$39.99',
+      originalPrice: '$69.99',
+      image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=500',
+      discount: '43% OFF',
+      category: 'Fashion',
+      rating: 4.5,
+      reviews: 123
+    },
+    {
+      id: 27,
+      name: 'Adjustable Weight Bench',
+      price: '$179.99',
+      originalPrice: '$259.99',
+      image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500',
+      discount: '31% OFF',
+      category: 'Sports',
+      rating: 4.7,
+      reviews: 178
+    },
+    {
+      id: 28,
+      name: 'Modern Floor Lamp',
+      price: '$79.99',
+      originalPrice: '$119.99',
+      image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500',
+      discount: '33% OFF',
+      category: 'Home & Garden',
+      rating: 4.6,
+      reviews: 156
+    },
+    {
+      id: 29,
+      name: '4K Action Camera',
+      price: '$199.99',
+      originalPrice: '$299.99',
+      image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500',
+      discount: '33% OFF',
+      category: 'Electronics',
+      rating: 4.8,
+      reviews: 201
+    },
+    {
+      id: 30,
+      name: 'Gold Watch Classic',
+      price: '$349.99',
+      originalPrice: '$499.99',
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
+      discount: '30% OFF',
+      category: 'Fashion',
+      rating: 4.9,
+      reviews: 345
+    },
+    {
+      id: 31,
+      name: 'Treadmill Pro',
+      price: '$899.99',
+      originalPrice: '$1299.99',
+      image: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=500',
+      discount: '31% OFF',
+      category: 'Sports',
+      rating: 4.7,
+      reviews: 267
+    },
+    {
+      id: 32,
+      name: 'Velvet Sofa Set',
+      price: '$1299.99',
+      originalPrice: '$1899.99',
+      image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500',
+      discount: '32% OFF',
+      category: 'Home & Garden',
+      rating: 4.8,
+      reviews: 189
     }
   ];
 
