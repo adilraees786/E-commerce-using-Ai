@@ -12,13 +12,12 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   // Load cart from localStorage on mount
-  // Load cart from localStorage on mount
   const [cartItems, setCartItems] = useState(() => {
     try {
       const savedCart = localStorage.getItem('cart');
       return savedCart ? JSON.parse(savedCart) : [];
     } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
+      // Error loading cart from localStorage - silently fail and use empty cart
       return [];
     }
   });
@@ -76,8 +75,9 @@ export const CartProvider = ({ children }) => {
 
   // Calculate total price
   const cartTotal = cartItems.reduce((total, item) => {
-    const price = parseFloat(item.price.replace('$', ''));
-    return total + price * item.quantity;
+    if (!item.price) return total;
+    const price = parseFloat(item.price.replace('$', '')) || 0;
+    return total + price * (item.quantity || 1);
   }, 0);
 
   const value = {

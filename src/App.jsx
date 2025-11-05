@@ -34,31 +34,38 @@ const PageTitle = () => {
   return null;
 };
 
-
-const App = () => {
+// Component to handle route animations
+const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
+    <>
+      <PageTitle />
+      <Navbar />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<ShoppingCart />} />
+          <Route path="/checkout" element={<Checkout />} />
+        </Routes>
+      </AnimatePresence>
+      <Footer />
+    </>
+  );
+};
+
+const App = () => {
+  return (
     <CartProvider>
       <BrowserRouter>
-        <div>
-          <PageTitle />
-          <Navbar />
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/cart" element={<ShoppingCart />} />
-              <Route path="/checkout" element={<Checkout />} />
-            </Routes>
-          </AnimatePresence>
-          <Footer />
-        </div>
+        <AnimatedRoutes />
       </BrowserRouter>
     </CartProvider>
   );
 };
+
 export default App;

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
+
 const Products = () => {
-  const { addToCart } = useCart(); // Get addToCart function from context
-  // Sample product data - replace with real data from API or state
+  const { addToCart } = useCart();
+
+  // Sample product data - moved outside component to prevent recreation on every render
   const allProducts = [
     {
       id: 1,
@@ -143,40 +145,106 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('featured');
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [imageErrors, setImageErrors] = useState({});
   const productsPerPage = 12;
 
-  // Filter and sort products
-  const filteredProducts = allProducts
-    .filter(product => selectedCategory === 'All' || product.category === selectedCategory)
-    .sort((a, b) => {
+  // Utility function to parse price safely
+  const parsePrice = useCallback((priceString) => {
+    if (!priceString || typeof priceString !== 'string') return 0;
+    const cleaned = priceString.replace(/[^0-9.]/g, '');
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  }, []);
+
+  // Memoized categories - only recalculates if products change
+  const categories = useMemo(() => {
+    return ['All', ...new Set(allProducts.map(product => product.category))];
+  }, []);
+
+  // Memoized filtered and sorted products
+  const filteredProducts = useMemo(() => {
+    let filtered = allProducts.filter(product => {
+      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+      const matchesSearch = searchQuery === '' ||
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+
+    // Sort products
+    const sorted = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case 'price-low':
-          return parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', ''));
+          return parsePrice(a.price) - parsePrice(b.price);
         case 'price-high':
-          return parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', ''));
+          return parsePrice(b.price) - parsePrice(a.price);
         case 'rating':
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
+        case 'name':
+          return a.name.localeCompare(b.name);
         default:
           return 0;
       }
     });
 
-  // Pagination
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    return sorted;
+  }, [selectedCategory, sortBy, searchQuery, parsePrice]);
 
-  // Get unique categories
-  const categories = ['All', ...new Set(allProducts.map(product => product.category))];
+  // Memoized pagination
+  const paginationData = useMemo(() => {
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  const handlePageChange = (pageNumber) => {
+    return {
+      currentProducts,
+      totalPages,
+      indexOfFirstProduct,
+      indexOfLastProduct
+    };
+  }, [filteredProducts, currentPage, productsPerPage]);
+
+  // Handlers with useCallback to prevent unnecessary re-renders
+  const handleCategoryChange = useCallback((category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortChange = useCallback((e) => {
+    setSortBy(e.target.value);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSearchChange = useCallback((e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  }, []);
+
+  const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
+
+  const handleImageError = useCallback((productId) => {
+    setImageErrors(prev => ({ ...prev, [productId]: true }));
+  }, []);
+
+  const handleAddToCart = useCallback((product) => {
+    try {
+      addToCart(product);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      // You could add a toast notification here
+    }
+  }, [addToCart]);
+
+  // Default placeholder image
+  const defaultImage = 'https://via.placeholder.com/500x500?text=Product+Image';
 
   return (
-    <motion.div 
+    <motion.div
       className="bg-white min-h-screen"
       initial="initial"
       animate="animate"
@@ -187,7 +255,7 @@ const Products = () => {
       <section className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
+          <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -203,50 +271,234 @@ const Products = () => {
         </div>
       </section>
 
-      {/* ... existing filters section ... */}
+      {/* Filters Section */}
+      <section className="py-8 bg-gray-50 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-6">
+            {/* Search Bar */}
+            <div className="w-full">
+              <label htmlFor="search" className="sr-only">
+                Search products
+              </label>
+              <input
+                id="search"
+                type="text"
+                placeholder="Search products by name or category..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                aria-label="Search products"
+              />
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* Category Filter */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">Filter by Category:</span>
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryChange(category)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${selectedCategory === category
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                      }`}
+                    aria-pressed={selectedCategory === category}
+                    aria-label={`Filter by ${category}`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sort Filter */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="sort" className="text-sm font-medium text-gray-700">
+                  Sort by:
+                </label>
+                <select
+                  id="sort"
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  aria-label="Sort products"
+                >
+                  <option value="featured">Featured</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                  <option value="name">Name: A to Z</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Results count */}
+            <div className="text-sm text-gray-600">
+              Showing {paginationData.currentProducts.length} of {filteredProducts.length} products
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Products Grid Section */}
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {currentProducts.length > 0 ? (
+          {paginationData.currentProducts.length > 0 ? (
             <>
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                 variants={staggerContainer}
                 initial="initial"
                 animate="animate"
+                transition={{ staggerChildren: 0.01, delayChildren: 0 }}
               >
-                {currentProducts.map((product, index) => (
+                {paginationData.currentProducts.map((product, index) => (
                   <motion.div
                     key={product.id}
                     className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group"
                     variants={staggerItem}
-                    transition={{ delay: index * 0.05 }}
+                    transition={{ duration: 0.1, ease: "easeOut" }}
                     whileHover={{ y: -8 }}
-                    layout
                   >
-                    {/* ... existing product card content ... */}
-                    <motion.button 
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Add to Cart
-                    </motion.button>
+                    {/* Product Image */}
+                    <div className="relative overflow-hidden bg-gray-100">
+                      <img
+                        src={imageErrors[product.id] ? defaultImage : product.image}
+                        alt={`${product.name} - ${product.category}`}
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={() => handleImageError(product.id)}
+                        loading="lazy"
+                      />
+                      {product.discount && (
+                        <div
+                          className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold"
+                          aria-label={`Discount: ${product.discount}`}
+                        >
+                          {product.discount}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="p-4">
+                      <p className="text-xs text-gray-500 mb-1" aria-label={`Category: ${product.category}`}>
+                        {product.category}
+                      </p>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">
+                        {product.name}
+                      </h3>
+
+                      {/* Rating */}
+                      <div className="flex items-center gap-1 mb-3" aria-label={`Rating: ${product.rating} out of 5 stars`}>
+                        <span className="text-yellow-400" aria-hidden="true">★</span>
+                        <span className="text-sm text-gray-700">{product.rating}</span>
+                        <span className="text-xs text-gray-500">({product.reviews} reviews)</span>
+                      </div>
+
+                      {/* Price */}
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-xl font-bold text-blue-600" aria-label={`Price: ${product.price}`}>
+                          {product.price}
+                        </span>
+                        {product.originalPrice && (
+                          <span className="text-sm text-gray-400 line-through" aria-label={`Original price: ${product.originalPrice}`}>
+                            {product.originalPrice}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Add to Cart Button */}
+                      <motion.button
+                        onClick={() => handleAddToCart(product)}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        aria-label={`Add ${product.name} to cart`}
+                      >
+                        Add to Cart
+                      </motion.button>
+                    </div>
                   </motion.div>
                 ))}
               </motion.div>
-              {/* ... existing pagination ... */}
+
+              {/* Pagination */}
+              {paginationData.totalPages > 1 && (
+                <div className="mt-12 flex justify-center items-center gap-2 flex-wrap">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Go to previous page"
+                  >
+                    Previous
+                  </button>
+
+                  {Array.from({ length: paginationData.totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${currentPage === page
+                          ? 'bg-blue-600 text-white'
+                          : 'border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={currentPage === page ? 'page' : undefined}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === paginationData.totalPages}
+                    className="px-4 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Go to next page"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </>
           ) : (
-            <motion.div 
+            <motion.div
               className="text-center py-16"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* ... existing empty state ... */}
+              <svg
+                className="mx-auto h-24 w-24 text-gray-400 mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-2">No products found</h3>
+              <p className="text-gray-600 mb-4">
+                {searchQuery
+                  ? `No products match "${searchQuery}". Try adjusting your search or filters.`
+                  : 'Try adjusting your filters to see more products.'}
+              </p>
+              {(searchQuery || selectedCategory !== 'All') && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('All');
+                    setCurrentPage(1);
+                  }}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Clear Filters
+                </button>
+              )}
             </motion.div>
           )}
         </div>

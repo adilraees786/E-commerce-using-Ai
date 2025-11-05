@@ -7,7 +7,113 @@ import { fadeIn, slideUp, staggerContainer, staggerItem, scaleIn, defaultTransit
 export const Home = () => {
   const { addToCart } = useCart();
   
-  // ... existing code for featuredCategories, featuredProducts, features ...
+  // Featured Categories Data
+  const featuredCategories = [
+    {
+      id: 1,
+      name: 'Electronics',
+      image: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=500',
+      count: '1,234 products'
+    },
+    {
+      id: 2,
+      name: 'Fashion',
+      image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500',
+      count: '856 products'
+    },
+    {
+      id: 3,
+      name: 'Home & Garden',
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500',
+      count: '642 products'
+    },
+    {
+      id: 4,
+      name: 'Sports',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500',
+      count: '428 products'
+    }
+  ];
+
+  // Featured Products Data
+  const featuredProducts = [
+    {
+      id: 1,
+      name: 'Wireless Headphones',
+      price: '$129.99',
+      originalPrice: '$199.99',
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+      discount: '35% OFF',
+      category: 'Electronics'
+    },
+    {
+      id: 2,
+      name: 'Smart Watch Pro',
+      price: '$249.99',
+      originalPrice: '$349.99',
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
+      discount: '29% OFF',
+      category: 'Electronics'
+    },
+    {
+      id: 3,
+      name: 'Running Shoes',
+      price: '$89.99',
+      originalPrice: '$129.99',
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
+      discount: '31% OFF',
+      category: 'Sports'
+    },
+    {
+      id: 4,
+      name: 'Laptop Backpack',
+      price: '$49.99',
+      originalPrice: '$79.99',
+      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
+      discount: '38% OFF',
+      category: 'Fashion'
+    }
+  ];
+
+  // Features Data
+  const features = [
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ),
+      title: 'Free Shipping',
+      description: 'On orders over $50'
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      ),
+      title: 'Secure Payment',
+      description: '100% protected transactions'
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      ),
+      title: 'Easy Returns',
+      description: '30-day return policy'
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      title: '24/7 Support',
+      description: 'Dedicated customer care'
+    }
+  ];
 
   return (
     <motion.div 
