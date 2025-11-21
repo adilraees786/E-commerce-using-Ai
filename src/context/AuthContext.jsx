@@ -14,42 +14,99 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Check if user is already logged in (from localStorage)
     const savedAuth = localStorage.getItem('adminAuth');
-    return savedAuth === 'true';
+    return savedAuth === 'true' || !!user;
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Login function
-  const login = async (username, password) => {
+  // Register function
+  const register = async (userData) => {
     setIsLoading(true);
-    
-    // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Default credentials (in production, this should be API call)
-    // You can change these credentials
-    if (username === 'admin' && password === 'admin123') {
-      setIsAuthenticated(true);
-      localStorage.setItem('adminAuth', 'true');
-      setIsLoading(false);
-      return { success: true, message: 'Login successful!' };
+    const newUser = {
+      id: Date.now().toString(),
+      ...userData,
+      createdAt: new Date().toISOString(),
+      role: 'user',
+    };
+
+    setUser(newUser);
+    setIsAuthenticated(true);
+    localStorage.setItem('user', JSON.stringify(newUser));
+    setIsLoading(false);
+    return { success: true, message: 'Registration successful!' };
+  };
+
+  // Login function
+  const login = async (username, password, isAdmin = false) => {
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    if (isAdmin) {
+      // Admin login
+      if (username === 'admin' && password === 'admin123') {
+        setIsAuthenticated(true);
+        localStorage.setItem('adminAuth', 'true');
+        setIsLoading(false);
+        return { success: true, message: 'Login successful!' };
+      } else {
+        setIsLoading(false);
+        return { success: false, message: 'Invalid username or password!' };
+      }
     } else {
+      // User login - check if user exists
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        if (userData.email === username && userData.password === password) {
+          setUser(userData);
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          return { success: true, message: 'Login successful!', user: userData };
+        }
+      }
       setIsLoading(false);
-      return { success: false, message: 'Invalid username or password!' };
+      return { success: false, message: 'Invalid email or password!' };
     }
   };
 
   // Logout function
   const logout = () => {
+    setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('adminAuth');
+    localStorage.removeItem('user');
+  };
+
+  // Update user profile
+  const updateProfile = (updatedData) => {
+    const updatedUser = { ...user, ...updatedData };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated, 
+      login, 
+      logout, 
+      register,
+      updateProfile,
+      isLoading 
+    }}>
       {children}
     </AuthContext.Provider>
   );

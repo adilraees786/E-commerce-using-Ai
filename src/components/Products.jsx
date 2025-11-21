@@ -2,9 +2,16 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
+import { useWishlist } from '../context/WishlistContext';
+import { useToast } from '../context/ToastContext';
+import { useReviews } from '../context/ReviewContext';
+import ProductReviews from './ProductReviews';
 
 const Products = () => {
   const { addToCart } = useCart();
+  const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const { success, error } = useToast();
+  const { getAverageRating } = useReviews();
 
   // Sample product data - moved outside component to prevent recreation on every render
   const allProducts = [
@@ -416,6 +423,29 @@ const Products = () => {
                         aria-label={`Add ${product.name} to cart`}
                       >
                         Add to Cart
+                      </motion.button>
+
+                      {/* Wishlist Button */}
+                      <motion.button
+                        onClick={() => {
+                          toggleWishlist(product);
+                          isInWishlist(product.id)
+                            ? success('Removed from wishlist')
+                            : success('Added to wishlist');
+                        }}
+                        className="absolute top-2 left-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors z-10"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        aria-label={`Add ${product.name} to wishlist`}
+                      >
+                        <svg
+                          className={`w-5 h-5 ${isInWishlist(product.id) ? 'text-red-500 fill-current' : 'text-gray-400'}`}
+                          fill={isInWishlist(product.id) ? 'currentColor' : 'none'}
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
                       </motion.button>
                     </div>
                   </motion.div>

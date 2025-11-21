@@ -4,6 +4,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { OrderProvider } from './context/OrderContext';
+import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { WishlistProvider } from './context/WishlistContext';
+import { ReviewProvider } from './context/ReviewContext';
 import Navbar from './components/Navbar';
 import { Home } from './components/Home';
 import Products from './components/Products';
@@ -14,6 +18,8 @@ import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Checkout from './components/Checkout';
 import PageLoader from './components/PageLoader';
+import ErrorBoundary from './components/ErrorBoundary';
+import UserProfile from './components/UserProfile';
 import { fadeIn } from './utils/animations';
 import './App.css';
 import AdminLayout from './components/admin/AdminLayout';
@@ -35,6 +41,7 @@ const PageTitle = () => {
       '/contact': 'Contact Us - My Website',
       '/cart': 'Shopping Cart - My Website',
       '/checkout': 'Checkout - My Website',
+      '/profile': 'My Profile - My Website',
       '/admin': 'Admin Dashboard - My Website',
       '/admin/products': 'Products Management - Admin Panel',
       '/admin/orders': 'Orders Management - Admin Panel',
@@ -56,10 +63,7 @@ const AnimatedRoutes = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
-    // Route change par loader show karein
     setIsLoading(true);
-    
-    // 2-3 seconds ke baad loader hide karein
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2500);
@@ -71,7 +75,6 @@ const AnimatedRoutes = () => {
     <>
       <PageTitle />
       <PageLoader isLoading={isLoading} />
-      {/* Only show Navbar and Footer for non-admin routes */}
       {!isAdminRoute && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -82,6 +85,7 @@ const AnimatedRoutes = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/profile" element={<UserProfile />} />
           
           {/* Admin Routes - Protected */}
           <Route 
@@ -108,15 +112,25 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <OrderProvider>
-          <BrowserRouter>
-            <AnimatedRoutes />
-          </BrowserRouter>
-        </OrderProvider>
-      </CartProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <CartProvider>
+              <OrderProvider>
+                <WishlistProvider>
+                  <ReviewProvider>
+                    <BrowserRouter>
+                      <AnimatedRoutes />
+                    </BrowserRouter>
+                  </ReviewProvider>
+                </WishlistProvider>
+              </OrderProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 
