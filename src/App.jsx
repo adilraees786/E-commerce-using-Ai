@@ -113,6 +113,7 @@ const AnimatedRoutes = () => {
 const App = () => {
   return (
     <ErrorBoundary>
+      
       <ThemeProvider>
         <ToastProvider>
           <AuthProvider>
