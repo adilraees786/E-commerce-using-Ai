@@ -65,12 +65,7 @@ const Footer = () => {
     }
   ];
 
-  const paymentMethods = [
-    { name: 'Visa', icon: '💳' },
-    { name: 'Mastercard', icon: '💳' },
-    { name: 'PayPal', icon: '💳' },
-    { name: 'Apple Pay', icon: '📱' }
-  ];
+
 
   // Newsletter subscription handler
   const handleNewsletterSubmit = (e) => {
@@ -227,21 +222,7 @@ const Footer = () => {
               ))}
             </div>
 
-            {/* Payment Methods */}
-            <div className="flex items-center space-x-2">
-              <span className="text-gray-400 text-sm mr-2">We Accept:</span>
-              <div className="flex space-x-2">
-                {paymentMethods.map((method, index) => (
-                  <div
-                    key={index}
-                    className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center text-lg hover:bg-gray-600 transition-colors duration-200"
-                    title={method.name}
-                  >
-                    {method.icon}
-                  </div>
-                ))}
-              </div>
-            </div>
+           
           </div>
         </div>
       </div>

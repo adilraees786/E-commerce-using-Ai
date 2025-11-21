@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useOrders } from '../context/OrderContext';
 
 const Checkout = () => {
   const { cartItems, cartTotal, clearCart } = useCart();
+  const { addOrder } = useOrders();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    
+
     // Billing Address
     streetAddress: '',
     apartment: '',
@@ -20,7 +22,7 @@ const Checkout = () => {
     state: '',
     zipCode: '',
     country: '',
-    
+
     // Shipping Address (if different)
     shippingSameAsBilling: true,
     shippingStreetAddress: '',
@@ -29,18 +31,18 @@ const Checkout = () => {
     shippingState: '',
     shippingZipCode: '',
     shippingCountry: '',
-    
+
     // Payment Information
     paymentMethod: 'card',
     cardNumber: '',
     cardName: '',
     cardExpiry: '',
     cardCvv: '',
-    
+
     // Additional Information
     orderNotes: ''
   });
-  
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -48,7 +50,7 @@ const Checkout = () => {
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -73,7 +75,7 @@ const Checkout = () => {
         } : {})
       }));
     }
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -198,26 +200,76 @@ const Checkout = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-    
-    // Simulate API call
+
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Order submitted:', {
-        customerDetails: formData,
-        orderItems: cartItems,
-        total: cartTotal
-      });
-      
+
+      // Calculate totals
+      const subtotal = cartTotal;
+      const tax = cartTotal * 0.1;
+      const shipping = 0;
+      const total = subtotal + tax + shipping;
+
+      // Create order object
+      const orderData = {
+        customerDetails: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          billingAddress: {
+            street: formData.streetAddress,
+            apartment: formData.apartment,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.zipCode,
+            country: formData.country,
+          },
+          shippingAddress: formData.shippingSameAsBilling ? {
+            street: formData.streetAddress,
+            apartment: formData.apartment,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.zipCode,
+            country: formData.country,
+          } : {
+            street: formData.shippingStreetAddress,
+            apartment: formData.shippingApartment,
+            city: formData.shippingCity,
+            state: formData.shippingState,
+            zipCode: formData.shippingZipCode,
+            country: formData.shippingCountry,
+          },
+          paymentMethod: formData.paymentMethod,
+          orderNotes: formData.orderNotes,
+        },
+        orderItems: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: typeof item.price === 'string' ? parseFloat(item.price.replace('$', '')) : item.price,
+          quantity: item.quantity,
+          image: item.image,
+        })),
+        total: total,
+        subtotal: subtotal,
+        shipping: shipping,
+        tax: tax,
+      };
+
+      // Save order to context
+      addOrder(orderData);
+
+      console.log('Order submitted:', orderData);
+
       setSubmitSuccess(true);
       clearCart();
-      
-      // Redirect to home after 3 seconds
+
       setTimeout(() => {
         navigate('/');
       }, 3000);
@@ -312,9 +364,8 @@ const Checkout = () => {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.firstName ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="John"
                     />
                     {errors.firstName && (
@@ -332,9 +383,8 @@ const Checkout = () => {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.lastName ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="Doe"
                     />
                     {errors.lastName && (
@@ -352,9 +402,8 @@ const Checkout = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.email ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="john@example.com"
                     />
                     {errors.email && (
@@ -372,9 +421,8 @@ const Checkout = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.phone ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="+1 (555) 123-4567"
                     />
                     {errors.phone && (
@@ -398,9 +446,8 @@ const Checkout = () => {
                       name="streetAddress"
                       value={formData.streetAddress}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.streetAddress ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.streetAddress ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="123 Main Street"
                     />
                     {errors.streetAddress && (
@@ -434,9 +481,8 @@ const Checkout = () => {
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.city ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.city ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="New York"
                       />
                       {errors.city && (
@@ -454,9 +500,8 @@ const Checkout = () => {
                         name="state"
                         value={formData.state}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.state ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.state ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="NY"
                       />
                       {errors.state && (
@@ -474,9 +519,8 @@ const Checkout = () => {
                         name="zipCode"
                         value={formData.zipCode}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.zipCode ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.zipCode ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="10001"
                       />
                       {errors.zipCode && (
@@ -495,9 +539,8 @@ const Checkout = () => {
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.country ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.country ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="United States"
                     />
                     {errors.country && (
@@ -536,9 +579,8 @@ const Checkout = () => {
                         name="shippingStreetAddress"
                         value={formData.shippingStreetAddress}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.shippingStreetAddress ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.shippingStreetAddress ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="123 Main Street"
                       />
                       {errors.shippingStreetAddress && (
@@ -572,9 +614,8 @@ const Checkout = () => {
                           name="shippingCity"
                           value={formData.shippingCity}
                           onChange={handleChange}
-                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.shippingCity ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.shippingCity ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="New York"
                         />
                         {errors.shippingCity && (
@@ -592,9 +633,8 @@ const Checkout = () => {
                           name="shippingState"
                           value={formData.shippingState}
                           onChange={handleChange}
-                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.shippingState ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.shippingState ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="NY"
                         />
                         {errors.shippingState && (
@@ -612,9 +652,8 @@ const Checkout = () => {
                           name="shippingZipCode"
                           value={formData.shippingZipCode}
                           onChange={handleChange}
-                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.shippingZipCode ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.shippingZipCode ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="10001"
                         />
                         {errors.shippingZipCode && (
@@ -633,9 +672,8 @@ const Checkout = () => {
                         name="shippingCountry"
                         value={formData.shippingCountry}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.shippingCountry ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.shippingCountry ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="United States"
                       />
                       {errors.shippingCountry && (
@@ -692,9 +730,8 @@ const Checkout = () => {
                         value={formData.cardNumber}
                         onChange={handleCardNumberChange}
                         maxLength={19}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="1234 5678 9012 3456"
                       />
                       {errors.cardNumber && (
@@ -712,9 +749,8 @@ const Checkout = () => {
                         name="cardName"
                         value={formData.cardName}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.cardName ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardName ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="John Doe"
                       />
                       {errors.cardName && (
@@ -734,9 +770,8 @@ const Checkout = () => {
                           value={formData.cardExpiry}
                           onChange={handleChange}
                           maxLength={5}
-                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardExpiry ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardExpiry ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="MM/YY"
                         />
                         {errors.cardExpiry && (
@@ -755,9 +790,8 @@ const Checkout = () => {
                           value={formData.cardCvv}
                           onChange={handleChange}
                           maxLength={4}
-                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardCvv ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardCvv ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="123"
                         />
                         {errors.cardCvv && (
@@ -793,20 +827,25 @@ const Checkout = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Summary</h2>
-                
+
                 {/* Order Items */}
                 <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between items-start border-b pb-3">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                        <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                  {cartItems.map((item) => {
+                    const itemPrice = typeof item.price === 'string' 
+                      ? parseFloat(item.price.replace('$', '')) 
+                      : item.price;
+                    return (
+                      <div key={item.id} className="flex justify-between items-start border-b pb-3">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">{item.name}</p>
+                          <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          ${(itemPrice * item.quantity).toFixed(2)}
+                        </p>
                       </div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        ${(parseFloat(item.price.replace('$', '')) * item.quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="border-t pt-4 space-y-3 mb-6">
