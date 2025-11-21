@@ -20,15 +20,15 @@ const PageLoader = ({ isLoading }) => {
 
     return (
         <div className={`page-loader ${!isLoading ? 'fade-out' : ''}`}>
-            {/* Spinner loader - uncomment agar yeh chahiye */}
-            {/* <div className="loader-spinner"></div> */}
+            {/* Spinner loader - circular */}
+            <div className="loader-spinner"></div>
 
             {/* Dots loader - modern look */}
-            <div className="loader-dots">
+            {/* <div className="loader-dots">
                 <div className="loader-dot"></div>
                 <div className="loader-dot"></div>
                 <div className="loader-dot"></div>
-            </div>
+            </div> */}
         </div>
     );
 };
