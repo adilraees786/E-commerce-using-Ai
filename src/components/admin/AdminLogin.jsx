@@ -21,7 +21,7 @@ const AdminLogin = () => {
       return;
     }
 
-    const result = await login(username, password);
+    const result = await login(username.trim(), password.trim(), true);
     
     if (result.success) {
       navigate('/admin');
