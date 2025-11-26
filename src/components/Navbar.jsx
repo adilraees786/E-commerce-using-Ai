@@ -37,20 +37,20 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo Section */}
           <motion.div 
-            className="flex-shrink-0 flex items-center"
+            className="flex-shrink-0 flex items-center min-w-0"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, ...defaultTransition }}
           >
-            <Link to="/" className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-1 sm:space-x-2 min-w-0 max-w-full">
               <motion.div 
-                className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="text-white font-bold text-xl md:text-2xl">E</span>
+                <span className="text-white font-bold text-lg sm:text-xl md:text-2xl">E</span>
               </motion.div>
-              <span className="text-xl md:text-2xl font-bold text-gray-800">
+              <span className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-800 truncate max-w-[120px] sm:max-w-none">
                 Ecommerce
               </span>
             </Link>
@@ -119,9 +119,9 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, ...defaultTransition }}
           >
-            {/* Search Icon - Mobile */}
+            {/* Search Icon - Hidden on Mobile */}
             <motion.button
-              className="lg:hidden p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
+              className="hidden lg:block p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
               aria-label="Search"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -139,7 +139,7 @@ const Navbar = () => {
               </svg>
             </motion.button>
 
-            {/* User Account */}
+            {/* User Account / Login */}
             {isAuthenticated && user ? (
               <Link
                 to="/profile"
@@ -153,24 +153,50 @@ const Navbar = () => {
                 </motion.div>
               </Link>
             ) : (
-              <motion.button
-                className="p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-colors duration-200 relative"
-                aria-label="Account"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+              <>
+                {/* Login Button */}
+                <Link
+                  to="/login"
+                  className="hidden md:block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                 >
-                  <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-              </motion.button>
+                  <motion.span whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    Login
+                  </motion.span>
+                </Link>
+                {/* Sign Up Button */}
+                <Link
+                  to="/login"
+                  className="hidden md:block px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200"
+                  onClick={(e) => {
+                    // Store that we want to show register form
+                    sessionStorage.setItem('showRegister', 'true');
+                  }}
+                >
+                  <motion.span whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    Sign Up
+                  </motion.span>
+                </Link>
+                {/* Mobile User Icon - Links to Login */}
+                <Link
+                  to="/login"
+                  className="md:hidden p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-colors duration-200 relative"
+                  aria-label="Login"
+                >
+                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                  </motion.div>
+                </Link>
+              </>
             )}
 
             {/* Shopping Cart */}
@@ -210,10 +236,10 @@ const Navbar = () => {
               </AnimatePresence>
             </Link>
 
-            {/* Wishlist Icon with Count */}
+            {/* Wishlist Icon with Count - Hidden on Mobile */}
             <Link
               to="/wishlist"
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors duration-200 relative"
+              className="hidden md:block p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors duration-200 relative"
               aria-label="Wishlist"
             >
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -254,10 +280,11 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <motion.button
               onClick={toggleMenu}
-              className="md:hidden p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-md transition-colors duration-200"
+              className="md:hidden p-2.5 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-md transition-colors duration-200 flex items-center justify-center min-w-[2.5rem] min-h-[2.5rem]"
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <AnimatePresence mode="wait">
                 {isMenuOpen ? (
@@ -357,6 +384,39 @@ const Navbar = () => {
                     </Link>
                   </motion.div>
                 ))}
+
+                {/* Mobile Login/Sign Up Links */}
+                {!isAuthenticated && (
+                  <>
+                    <motion.div
+                      variants={staggerItem}
+                      transition={{ delay: navLinks.length * 0.05 }}
+                    >
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                      >
+                        Login
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      variants={staggerItem}
+                      transition={{ delay: (navLinks.length + 1) * 0.05 }}
+                    >
+                      <Link
+                        to="/login"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          sessionStorage.setItem('showRegister', 'true');
+                        }}
+                        className="block px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors duration-200 text-center"
+                      >
+                        Sign Up
+                      </Link>
+                    </motion.div>
+                  </>
+                )}
               </motion.div>
             </motion.div>
           )}

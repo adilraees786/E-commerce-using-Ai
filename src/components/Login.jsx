@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  // Check if user came from Sign Up button
+  const [isLogin, setIsLogin] = useState(() => {
+    const showRegister = sessionStorage.getItem('showRegister');
+    if (showRegister === 'true') {
+      sessionStorage.removeItem('showRegister');
+      return false;
+    }
+    return true;
+  });
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, slideInLeft, defaultTransition } from '../../utils/animations';
@@ -6,9 +6,22 @@ import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+
+  // Handle window resize for responsive sidebar
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   const menuItems = [
     {
@@ -134,7 +147,7 @@ const AdminLayout = () => {
       <div className="flex">
         {/* Sidebar */}
         <AnimatePresence>
-          {(isSidebarOpen || window.innerWidth >= 1024) && (
+          {(isSidebarOpen || isDesktop) && (
             <motion.aside
               className={`bg-white shadow-lg fixed lg:static inset-y-0 left-0 z-30 pt-16 lg:pt-0 ${
                 isSidebarOpen ? 'w-64' : 'w-0'

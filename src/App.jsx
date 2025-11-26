@@ -20,11 +20,13 @@ import Checkout from './components/Checkout';
 import PageLoader from './components/PageLoader';
 import ErrorBoundary from './components/ErrorBoundary';
 import UserProfile from './components/UserProfile';
+import Login from './components/Login';
 import { fadeIn } from './utils/animations';
 import './App.css';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminProducts from './components/admin/AdminProducts';
+import AdminUsers from './components/admin/AdminUsers';
 import AdminOrders from './components/admin/AdminOrders';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
@@ -41,6 +43,7 @@ const PageTitle = () => {
       '/contact': 'Contact Us - My Website',
       '/cart': 'Shopping Cart - My Website',
       '/checkout': 'Checkout - My Website',
+      '/login': 'Login - My Website',
       '/profile': 'My Profile - My Website',
       '/admin': 'Admin Dashboard - My Website',
       '/admin/products': 'Products Management - Admin Panel',
@@ -85,6 +88,7 @@ const AnimatedRoutes = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<UserProfile />} />
           
           {/* Admin Routes - Protected */}
@@ -99,7 +103,7 @@ const AnimatedRoutes = () => {
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
-            <Route path="users" element={<div className="p-8"><h1 className="text-3xl font-bold">Users Management</h1></div>} />
+            <Route path="users" element={<AdminUsers />} />
             <Route path="categories" element={<div className="p-8"><h1 className="text-3xl font-bold">Categories Management</h1></div>} />
             <Route path="settings" element={<div className="p-8"><h1 className="text-3xl font-bold">Settings</h1></div>} />
           </Route>

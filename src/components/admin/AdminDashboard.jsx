@@ -229,7 +229,7 @@ const AdminDashboard = () => {
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        #{order.id.slice(-6)}
+                        #{order.id ? order.id.slice(-6) : 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {getCustomerName(order)}
